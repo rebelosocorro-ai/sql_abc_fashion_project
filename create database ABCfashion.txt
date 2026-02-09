@@ -1,0 +1,115 @@
+create database ABCfashion
+
+Use ABCfashion
+
+-----> Create Salesman Table( SalesmanID - Primary Key, SalesmanName, Commission, City - default , Age )
+
+			create table Salesman (
+			SalesmanID int Primary Key,
+			SalesmanName Varchar (30),
+			Commission decimal (10,2),
+			City Varchar (30) default 'Unknown',
+			Age int
+			) 
+---> Insert Values in Salesman
+			insert into Salesman 
+			Values ( 101,'Joe',50,'California',17),
+				   ( 102,'Simon',75,'Texas',25),
+				   ( 103,'Jessie',105,'Florida',35),
+				   ( 104,'Danny',100,'Texas',22),
+				   ( 105,'Lia',65,'New Jersey',30)
+
+			select * from Salesman
+
+------> Create Customer Table( salesmanID - Foreign Key, CustomerID, Customer Name - Not Null, Purchase Amount)
+			Create table Customer (
+			SalesmanID int,
+			CustomerID int Primary Key,
+			Customername Varchar (50) not null,
+			PurchaseAmount Decimal (10,2) not null
+			)
+			select * from Customer
+
+
+------> Create Orders Table ( OrderID, CustomerID, SalesmanID, OrderDate, Amount)
+
+			create table Orders (
+			OrderID int,
+			CustomerID int,
+			SalesmanID int,
+			OrderDate date,
+			Amount Decimal (10,2)
+			)
+			select * from Orders
+
+---->1. Insert a New Records in Orders table
+			INSERT INTO Orders ( OrderID, CustomerID, SalesmanID, OrderDate, Amount)
+			Values(5001, 2345, 101,'04-07-2021', 550),
+				  (5003, 1234, 105,'15-02-2022', 1500),
+				  (5002, 3456, 102,'10-09-2021', 5500),
+				  (5004, 4567, 103,'30-04-2023', 3000),
+				  (5005, 5678, 104,'04-10-2022', 4500);
+
+---->2. Add Primary key constraint for SalesmanId column in Salesman table. Add default constraint for City column in Salesman table.
+   ---> Primary Key Constraint for SalesmanID and Default Constraint for City was already added during the table creation.
+   ---> The command for that would have been 
+					   --Use ABCfashion
+					   --Alter table Salesman
+					   --Alter column SalesmanID int not null
+					   --Alter Table Salesman
+					   --add constraint PK_Salesman Primary key ( SalesmanID);  
+
+
+				  --3. --Alter table Salesman 
+					   --Alter column city varchar  -- Ensure column is INT and NOT NULL
+					   --Alter table Salesman
+					   --add constraint DF_City Default 'UNKNOWN' for City 
+
+----->4.  Add Foreign Key Constraint for SaleamanID in Customer Table.
+			Alter table Customer
+			Add constraint FK_salesman
+			Foreign Key (SalesmanID) references Salesman (SalesmanID)
+
+------> FK constraint cannot be added because the distinct ID from Customer which is 107 and 110 are not shown in SalesmanID from Customer.
+			SELECT DISTINCT SalesmanID 
+			FROM Customer 
+			WHERE SalesmanID NOT IN (SELECT SalesmanID FROM Salesman);
+
+----> 5. Add not NULL constraint in Customer_name column for the customer table
+			Alter table Customer
+			Alter column Customername Varchar (50) NOT NULL
+
+-----> 6. Fetch Customer whose name ends with N and have a purchase amount greater then 500
+			select * from customer
+			WHERE Customername LIKE '%N' 
+			AND PurchaseAmount > 500
+
+----->7. Using Set Operators retrieve Unique SalesmanID Values with two tables.
+				Select SalesmanID from Salesman
+				UNION 
+				Select SalesmanID from Customer
+---Union operator shows unique values
+
+------> 8. Retrieve SalesmanID with Duplicates from two tables.
+ Select SalesmanID from Salesman
+UNION ALL
+Select SalesmanID from Customer
+----Union all operator shows duplicate values	
+
+-----> 9. Display Columns with matching Data ( OrderDate, SalesmanName, Customername, Commission, City, PurchaseAmount)
+select * from customer
+select * from Orders
+select * from Salesman
+
+--> O.orderDate, S.SalesmanName, C.Customername,S.Commission, S.City, C.PurchaseAmount
+                                Select O.orderDate, S.SalesmanName, C.Customername, S.Commission, S.city 
+				from Salesman S 
+				inner join Customer C on S.SalesmanID = C.SalesmanID 
+				inner join Orders O on C.CustomerID=O.CustomerID
+				where C.PurchaseAmount between 500 and 1500
+
+----> 10. Use Right to fetch all the results from Salesman and orders Table
+					Select * from Salesman
+					Select * from Orders
+					Select * from Salesman S right join Orders O on S.SalesmanID = O.SalesmanID
+
